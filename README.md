@@ -9,3 +9,4 @@
   npm run build
 
 
+All the custom nodes are present in nodes folder , Custom edges in edge folder , There are two cutom hooks useCreateEdge and useCreateNode to create edges and nodes.

@@ -90,7 +90,7 @@ const MealDetailNode = ({ data, id }:viewMealNodeProps) => {
   return (
     <>
        <Handle  type='target' position={Position.Left}/>
-       <div className='bg-white p-4 flex flex-col gap-2 shadow-xl w-[30%]'>   
+       <div className='bg-white p-4 flex flex-col gap-2 shadow-xl min-w-[30%] max-w-[40%]'>   
 
               <div className='border-b-2 flex justify-between'>
                 {mealData?.strMeal}
@@ -155,7 +155,7 @@ const MealDetailNode = ({ data, id }:viewMealNodeProps) => {
                   <div className='font-bold text-gray-600'>
                       Instructions
                   </div>
-                  <div className=' text-gray-600' >
+                  <div className=' text-gray-600 max-h-40 overflow-y-scroll' >
                       {
                       mealData?.strInstructions.split('\r\n').map((line, index) => (
                         <p key={index}>{line}</p>

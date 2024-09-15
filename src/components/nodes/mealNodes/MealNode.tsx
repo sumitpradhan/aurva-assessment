@@ -1,9 +1,9 @@
 import { Handle, Position, useReactFlow } from "@xyflow/react";
-import { nanoid } from "nanoid";
 import { useEffect, useState } from "react";
 import { mealViewNode } from "../../../constants/constants";
 import useCreateEdge from "../../../hooks/useCreateEdge";
 import { Meal } from "../viewNodes/ViewMealsNode";
+import useCreateNode from "../../../hooks/useCreateNode";
 
 interface mealData{
   sourceId:string,
@@ -21,34 +21,20 @@ const MealNode = ({ data, id}:mealnodeProps) => {
   useEffect(() => {
     createEdge();
   },[createEdge]);
-  const node = getNode(id);
 
-  // Type assertion to ensure node is not undefined
-  if (!node) {
-    console.error(`Node with id ${id} not found`);
-    return null;
-  }
-
-  const { position } = node;
+  const createNodes= useCreateNode(); 
 
   const handleMealNodeClicked = () => {
     if (disabeClick) return;
-    const newNodes = mealViewNode.map((viewType, index) => {
-      const nano_id = nanoid();
+    const newNodes = mealViewNode.map((viewType) => {
       return {
-        id: nano_id,
         type: viewType,
-        position: { x: position.x + 300, y: position.y + index * 70 },
         data: {
-          sourceId: id,
           mealID: data.mealData.idMeal,
         },
       };
     });
-    setNodes(prevNodes => {
-      const updatedNodes = [...prevNodes, ...newNodes];
-      return updatedNodes;
-    });
+    createNodes({parentNodeId:id,newNodes:newNodes,setNodes:setNodes,getNode:getNode});
     setDisableClick(true);
   };
 
@@ -67,7 +53,7 @@ const MealNode = ({ data, id}:mealnodeProps) => {
           />
         </div>
 
-        <div>{data.mealData.strMeal}</div>
+        <div className="cursor-pointer">{data.mealData.strMeal}</div>
       </div>
       <Handle type="source" position={Position.Right} />
     </>

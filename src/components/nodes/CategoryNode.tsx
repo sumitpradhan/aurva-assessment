@@ -3,10 +3,10 @@ import {
   Position,
   useReactFlow
 } from "@xyflow/react";
-import { nanoid } from "nanoid";
 import { useEffect, useState } from "react";
 import { Category } from "./ExplorerNode";
 import useCreateEdge from "../../hooks/useCreateEdge";
+import useCreateNode from "../../hooks/useCreateNode";
 
 type categoryData={
   sourceId: string,
@@ -25,33 +25,19 @@ const CategoryNode = ({ data, id }:CategoryNodeProps) => {
   useEffect(() => {
     createEdge();
   },[createEdge]);
-
-
-  const node = getNode(id);
-
-  // Type assertion to ensure node is not undefined
-  if (!node) {
-    console.error(`Node with id ${id} not found`);
-    return null;
-  }
-
-  const { position } = node;
+ 
+  const createNodes= useCreateNode(); 
 
   const handleCategoryClicked = () => {
     if (disabeClick) return;
-    setNodes(prevNodes => [
-      ...prevNodes,
-      {
-        id: nanoid(),
-        type: "viewMeal",
-        position: { x: position.x + 200, y: position.y },
-        data: {
-          sourceId: id,
-          mealFilter:"c="+data.categoryData.strCategory,
-        },
+    const newNode= [];
+    newNode.push({
+      type: "viewMeal",
+      data: {
+        mealFilter:"c="+data.categoryData.strCategory,
       },
-    ]);
-
+    })
+    createNodes({parentNodeId:id,newNodes:newNode,setNodes:setNodes,getNode:getNode});
     setDisableClick(true);
   };
   return (

@@ -1,10 +1,10 @@
 import { Handle, Position, useReactFlow } from "@xyflow/react";
-import { nanoid } from "nanoid";
 import  { useEffect, useState } from "react";
 import { FILTER_API } from "../../../constants/constants";
 
 import viewIcon from "D:/React-Projects/aurva-assessment/public/open_view.png"
 import useCreateEdge from "../../../hooks/useCreateEdge";
+import useCreateNode from "../../../hooks/useCreateNode";
 
 type viewMealData ={
   sourceId: string,
@@ -27,17 +27,11 @@ const ViewMealsNode = ({ data, id }:viewMealNodeProp) => {
   const [disabeClick, setDisableClick] = useState(false);
 
   const createEdge = useCreateEdge(data.sourceId , id, setEdges); //custom hook to create edge
-
+  const createNodes= useCreateNode(); 
   useEffect(() => {
     createEdge();
   },[createEdge]);
 
-  const node = getNode(id);
-  if (!node) {
-    console.error(`Node with id ${id} not found`);
-    return null;
-  }
-  const position = node.position;
 
   const handleViewMealNodeClicked = async () => {
     if (disabeClick) return;
@@ -46,24 +40,16 @@ const ViewMealsNode = ({ data, id }:viewMealNodeProp) => {
     );
     try{
       const mealData = await response.json();
-      const newNodes = mealData?.meals.slice(0, 5).map((meal:Meal, index:number) => {
-        const nano_id = nanoid();
-        console.log(meal)
+      const newNodes = mealData?.meals.slice(0, 5).map((meal:Meal) => {
         return {
-          id: nano_id,
           type: "meal",
-          position: { x: position.x + 200, y: position.y + index * 70 },
           data: {
-            sourceId: id,
             mealData: meal,
           },
         };
       });
   
-      setNodes(prevNodes => {
-        const updatedNodes = [...prevNodes, ...newNodes];
-        return updatedNodes;
-      });
+      createNodes({parentNodeId:id,newNodes:newNodes,setNodes:setNodes,getNode:getNode});
       setDisableClick(true);
     }catch(error)
     {

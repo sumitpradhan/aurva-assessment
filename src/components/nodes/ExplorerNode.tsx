@@ -1,8 +1,8 @@
 import { Handle, Position, useReactFlow } from "@xyflow/react";
-import { nanoid } from "nanoid";
 import { fetchData } from "../../utils/utils";
 import { CATEGORY_API } from "../../constants/constants";
 import { useState } from "react";
+import useCreateNode from "../../hooks/useCreateNode";
 
 
 type exploreData ={
@@ -23,12 +23,8 @@ export interface Category {
 const ExplorerNode = ({ data, id } :ExplorerNodeProps) => {
   const { getNode, setNodes} = useReactFlow();
   const [disabeClick, setDisableClick] = useState(false);
-  const node = getNode(id);
-  if (!node) {
-    console.error(`Node with id ${id} not found`);
-    return null;
-  }
-  const position = node.position;
+  const createNodes= useCreateNode(); 
+  
   const handleExploreOpen = async () => {
     if (disabeClick) return;
     let data;
@@ -39,22 +35,18 @@ const ExplorerNode = ({ data, id } :ExplorerNodeProps) => {
     catch(error){
         console.log(error)
     }
-    const newNodes = data.categories.slice(0, 5).map((category:Category, index :number) => {
-      const nano_id = nanoid();
+
+    const newNodes = data.categories.slice(0, 5).map((category:Category) => {
       return {
-        id: nano_id,
         type: "category",
-        position: { x: position.x + 220, y: position.y + index * 70 },
         data: {
-          sourceId: id,
           categoryData: category,
         },
       };
     });
-    setNodes(prevNodes => {
-      const updatedNodes = [...prevNodes, ...newNodes];
-      return updatedNodes;
-    });
+
+    createNodes({parentNodeId:id,newNodes:newNodes,setNodes:setNodes,getNode:getNode});
+
     setDisableClick(true);
   };
   return (
