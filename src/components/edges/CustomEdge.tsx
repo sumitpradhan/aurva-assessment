@@ -1,6 +1,7 @@
 import { EdgeProps, getBezierPath } from '@xyflow/react';
 import React from 'react';
 
+//This is a Custom Edge , this type is added in the edge type constant in constant.js file
 const CustomEdge: React.FC<EdgeProps> = ({
   id,
   sourceX,
